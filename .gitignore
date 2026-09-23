@@ -95,3 +95,6 @@ models/weights/*
 *.sqlite3
 *.db
 *.parquet
+
+.vercel
+.env*

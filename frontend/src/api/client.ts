@@ -26,12 +26,36 @@ export interface RequestOptions extends RequestInit {
 }
 
 const DEFAULT_TIMEOUT_MS = 8000;
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL as string) || '';
+
+/**
+ * Resolves the configured API base URL.
+ * Defaults to empty string (same-origin relative URL) if VITE_API_BASE_URL is not set.
+ */
+export function getApiBaseUrl(): string {
+  const envBase = import.meta.env.VITE_API_BASE_URL;
+  if (envBase && typeof envBase === 'string' && envBase.trim().length > 0) {
+    return envBase.trim().replace(/\/+$/, '');
+  }
+  return '';
+}
+
+/**
+ * Resolves an API endpoint path against the base URL.
+ * Preserves absolute URLs, or prepends base URL to relative paths.
+ */
+export function resolveApiUrl(endpoint: string): string {
+  if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+    return endpoint;
+  }
+  const base = getApiBaseUrl();
+  const normalized = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  return `${base}${normalized}`;
+}
 
 export async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { timeoutMs = DEFAULT_TIMEOUT_MS, headers, ...restOptions } = options;
 
-  const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;
+  const url = resolveApiUrl(endpoint);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 

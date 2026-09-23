@@ -3,6 +3,7 @@ import { Activity, RefreshCw, RotateCcw, Radio, Film, ShieldAlert, Cpu } from 'l
 import { useAppStore } from '../../stores/useAppStore';
 import { useTwinStore } from '../../stores/useTwinStore';
 import { StatusIndicator, SystemStatus } from '../common/StatusIndicator';
+import { resolveApiUrl } from '../../api/client';
 
 export const Header: React.FC = () => {
   const { connectionStatus, checkBackendHealth, systemInfo } = useAppStore();
@@ -29,7 +30,7 @@ export const Header: React.FC = () => {
     setIsResetting(true);
     try {
       // 1. Send reset to backend simulation API
-      await fetch('http://localhost:8000/api/v1/simulation/reset', {
+      await fetch(resolveApiUrl('/api/v1/simulation/reset'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),

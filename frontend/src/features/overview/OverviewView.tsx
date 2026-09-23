@@ -17,6 +17,7 @@ import { useTwinStore } from '../../stores/useTwinStore';
 import { Card, CardHeader, CardTitle, CardContent } from '../../components/common/Card';
 import { Badge } from '../../components/common/Badge';
 import { StatusIndicator } from '../../components/common/StatusIndicator';
+import { resolveApiUrl } from '../../api/client';
 
 export const OverviewView: React.FC = () => {
   const { readiness, systemInfo, connectionStatus, setActiveTab, checkBackendHealth } = useAppStore();
@@ -31,7 +32,7 @@ export const OverviewView: React.FC = () => {
 
   const handleSafeReset = async () => {
     try {
-      await fetch('http://localhost:8000/api/v1/simulation/reset', {
+      await fetch(resolveApiUrl('/api/v1/simulation/reset'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({}),

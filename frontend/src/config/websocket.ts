@@ -20,6 +20,8 @@ export const WEBSOCKET_CONFIG = {
 /**
  * Dynamically resolves the authoritative WebSocket URL.
  * Supports environment override via VITE_WS_URL or builds from window.location.
+ * In local development (localhost / 127.0.0.1), connects to port 8000 (or VITE_WS_PORT).
+ * In production, connects over same-origin host without port 8000 (e.g., wss://<host>/api/v1/ws/telemetry).
  */
 export function getWebSocketUrl(): string {
   // 1. Environment variable override
@@ -36,7 +38,17 @@ export function getWebSocketUrl(): string {
   // 3. Browser runtime dynamic resolution
   const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
   const hostname = window.location.hostname || 'localhost';
-  const port = import.meta.env.VITE_WS_PORT || '8000';
+  const isLocalhost =
+    hostname === 'localhost' ||
+    hostname === '127.0.0.1' ||
+    hostname === '[::1]';
 
-  return `${protocol}//${hostname}:${port}/api/v1/ws/telemetry`;
+  if (isLocalhost) {
+    const port = import.meta.env.VITE_WS_PORT || '8000';
+    return `${protocol}//${hostname}:${port}/api/v1/ws/telemetry`;
+  }
+
+  // In production, connect through current browser host with no :8000
+  const host = window.location.host || hostname;
+  return `${protocol}//${host}/api/v1/ws/telemetry`;
 }

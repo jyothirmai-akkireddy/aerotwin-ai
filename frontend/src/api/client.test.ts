@@ -31,4 +31,19 @@ describe('API Client & Error Handling', () => {
     });
     expect(err.message).toBe('API request failed');
   });
+
+  describe('resolveApiUrl', () => {
+    it('preserves absolute URLs starting with http:// or https://', async () => {
+      const { resolveApiUrl } = await import('./client');
+      expect(resolveApiUrl('https://api.external.com/telemetry')).toBe('https://api.external.com/telemetry');
+      expect(resolveApiUrl('http://localhost:8000/api/v1/health')).toBe('http://localhost:8000/api/v1/health');
+    });
+
+    it('resolves relative paths with leading slash', async () => {
+      const { resolveApiUrl, getApiBaseUrl } = await import('./client');
+      const base = getApiBaseUrl();
+      expect(resolveApiUrl('/api/v1/missions/predefined')).toBe(`${base}/api/v1/missions/predefined`);
+      expect(resolveApiUrl('api/v1/missions/predefined')).toBe(`${base}/api/v1/missions/predefined`);
+    });
+  });
 });

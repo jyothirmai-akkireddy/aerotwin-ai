@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTwinStore } from '../../../stores/useTwinStore';
+import { resolveApiUrl } from '../../../api/client';
 import {
   APPROVED_ACCELERATED_SPEEDS,
   ReplayDatasetMetadataDto,
@@ -24,7 +25,7 @@ export const TwinReplayControls: React.FC = () => {
 
   const fetchDatasets = useCallback(async () => {
     try {
-      const resp = await fetch('http://localhost:8000/api/v1/replay/datasets');
+      const resp = await fetch(resolveApiUrl('/api/v1/replay/datasets'));
       if (resp.ok) {
         const data: ReplayDatasetMetadataDto[] = await resp.json();
         setDatasets(data);
@@ -46,7 +47,7 @@ export const TwinReplayControls: React.FC = () => {
     setIsLoading(true);
     setErrorMessage(null);
     try {
-      const resp = await fetch('http://localhost:8000/api/v1/replay/load', {
+      const resp = await fetch(resolveApiUrl('/api/v1/replay/load'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename }),
@@ -67,7 +68,7 @@ export const TwinReplayControls: React.FC = () => {
 
   const handleControl = async (action: string, target?: number | string) => {
     try {
-      const resp = await fetch('http://localhost:8000/api/v1/replay/control', {
+      const resp = await fetch(resolveApiUrl('/api/v1/replay/control'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, target }),
@@ -90,7 +91,7 @@ export const TwinReplayControls: React.FC = () => {
         await handleLoadDataset(selectedFile);
       }
 
-      const resp = await fetch('http://localhost:8000/api/v1/replay/mode', {
+      const resp = await fetch(resolveApiUrl('/api/v1/replay/mode'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mode: newMode }),

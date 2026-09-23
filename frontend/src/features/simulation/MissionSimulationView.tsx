@@ -13,6 +13,7 @@ import {
   FileCheck,
 } from 'lucide-react';
 import { useTwinStore } from '../../stores/useTwinStore';
+import { resolveApiUrl } from '../../api/client';
 
 interface PredefinedMissionSummary {
   mission_id: string;
@@ -70,7 +71,7 @@ export const MissionSimulationView: React.FC = () => {
   useEffect(() => {
     const fetchMissions = async () => {
       try {
-        const resp = await fetch('http://localhost:8000/api/v1/missions/predefined');
+        const resp = await fetch(resolveApiUrl('/api/v1/missions/predefined'));
         if (resp.ok) {
           const data: PredefinedMissionSummary[] = await resp.json();
           setMissions(data);
@@ -90,7 +91,7 @@ export const MissionSimulationView: React.FC = () => {
     setErrorMessage(null);
     setExportNotice(null);
     try {
-      const resp = await fetch('http://localhost:8000/api/v1/missions/simulate', {
+      const resp = await fetch(resolveApiUrl('/api/v1/missions/simulate'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -120,7 +121,7 @@ export const MissionSimulationView: React.FC = () => {
     if (!simResult?.dataset_path) return;
     try {
       const filename = simResult.dataset_path.split(/[\\/]/).pop() || '';
-      const resp = await fetch('http://localhost:8000/api/v1/replay/load', {
+      const resp = await fetch(resolveApiUrl('/api/v1/replay/load'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename }),
@@ -128,7 +129,7 @@ export const MissionSimulationView: React.FC = () => {
       if (resp.ok) {
         const status = await resp.json();
         setReplayStatus(status);
-        await fetch('http://localhost:8000/api/v1/replay/mode', {
+        await fetch(resolveApiUrl('/api/v1/replay/mode'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ mode: 'REPLAY' }),
