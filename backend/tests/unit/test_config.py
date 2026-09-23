@@ -43,3 +43,28 @@ def test_app_settings_composition():
     assert app_cfg.server.port == 9090
     assert app_cfg.telemetry.rate_hz == 25
     assert app_cfg.telemetry.dt_seconds == 0.04
+
+
+def test_port_resolution_when_unset(monkeypatch):
+    """Verify PORT unset falls back to default port 8000."""
+    monkeypatch.delenv("PORT", raising=False)
+    app_cfg = AppSettings()
+    assert app_cfg.port == 8000
+    assert app_cfg.server.port == 8000
+
+
+def test_port_resolution_when_empty_string(monkeypatch):
+    """Verify empty string PORT (e.g. Vercel deployment) safely falls back to 8000."""
+    monkeypatch.setenv("PORT", "")
+    app_cfg = AppSettings()
+    assert app_cfg.port == 8000
+    assert app_cfg.server.port == 8000
+
+
+def test_port_resolution_when_valid_integer_string(monkeypatch):
+    """Verify integer string PORT overrides default port."""
+    monkeypatch.setenv("PORT", "8001")
+    app_cfg = AppSettings()
+    assert app_cfg.port == 8001
+    assert app_cfg.server.port == 8001
+

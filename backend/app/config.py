@@ -1,6 +1,8 @@
 """Application configuration managed via Pydantic Settings with explicit categories."""
 
-from pydantic import BaseModel, Field
+from typing import Any
+
+from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -17,6 +19,13 @@ class ServerConfig(BaseModel):
         default="http://localhost:5173,http://127.0.0.1:5173",
         description="Comma-separated CORS origins",
     )
+
+    @field_validator("port", mode="before")
+    @classmethod
+    def assemble_port(cls, v: Any) -> int:
+        if v is None or v == "" or (isinstance(v, str) and not v.strip()):
+            return 8000
+        return int(v)
 
     @property
     def cors_origins(self) -> list[str]:
@@ -113,6 +122,13 @@ class AppSettings(BaseSettings):
     environment: str = "development"
     port: int = 8000
     telemetry_rate_hz: int = 10
+
+    @field_validator("port", mode="before")
+    @classmethod
+    def assemble_port(cls, v: Any) -> int:
+        if v is None or v == "" or (isinstance(v, str) and not v.strip()):
+            return 8000
+        return int(v)
 
     model_config = SettingsConfigDict(
         env_file=".env",
