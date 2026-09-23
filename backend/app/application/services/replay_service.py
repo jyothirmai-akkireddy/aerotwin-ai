@@ -18,17 +18,19 @@ class ReplayService:
 
     def __init__(self, search_directories: list[str | Path] | None = None):
         if search_directories is None:
-            base_dir = Path(settings.storage.parquet_data_dir).parent
             self.search_dirs = [
-                Path(settings.storage.parquet_data_dir),
-                base_dir / "sqlite",
-                base_dir / "missions",
+                settings.storage.parquet_dir,
+                settings.storage.sqlite_dir,
+                settings.storage.missions_dir,
             ]
         else:
             self.search_dirs = [Path(p) for p in search_directories]
 
         for d in self.search_dirs:
-            d.mkdir(parents=True, exist_ok=True)
+            try:
+                d.mkdir(parents=True, exist_ok=True)
+            except OSError as e:
+                logger.warning(f"Could not create replay search directory {d}: {e}")
 
         self._active_source: ReplayTelemetrySource | None = None
         self._active_metadata: ReplayDatasetMetadata | None = None

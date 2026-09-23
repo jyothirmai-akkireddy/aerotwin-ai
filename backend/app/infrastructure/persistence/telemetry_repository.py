@@ -14,6 +14,9 @@ from app.domain.entities.telemetry import (
     TelemetryFrame,
     TelemetrySource,
 )
+from app.infrastructure.logging.logger import get_logger
+
+logger = get_logger("aerotwin.repository.telemetry")
 
 
 class SqliteTelemetryRepository(ITelemetryRepository):
@@ -80,7 +83,10 @@ class SqliteTelemetryRepository(ITelemetryRepository):
 
         # Ensure directory exists if saving to disk
         if self.db_path != ":memory:":
-            Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
+            try:
+                Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
+            except OSError as e:
+                logger.warning(f"Could not create database directory for {self.db_path}: {e}")
 
         self._conn = sqlite3.connect(
             self.db_path,
@@ -238,7 +244,10 @@ class SqliteTelemetryRepository(ITelemetryRepository):
     ) -> Path:
         """Export an in-memory list of TelemetryFrame objects directly to Parquet."""
         path = Path(destination_path)
-        path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            logger.warning(f"Could not create Parquet export directory for {path}: {e}")
 
         if not frames:
             # Create an empty table matching schema

@@ -20,11 +20,14 @@ class MissionService:
 
     def __init__(self, missions_storage_dir: str | Path | None = None):
         if missions_storage_dir is None:
-            self.storage_dir = Path(settings.storage.parquet_data_dir).parent / "missions"
+            self.storage_dir = settings.storage.missions_dir
         else:
             self.storage_dir = Path(missions_storage_dir)
 
-        self.storage_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            self.storage_dir.mkdir(parents=True, exist_ok=True)
+        except OSError as e:
+            logger.warning(f"Could not create mission storage directory {self.storage_dir}: {e}")
 
     def list_predefined_missions(self) -> list[dict]:
         """List summary information for all predefined benchmark missions."""

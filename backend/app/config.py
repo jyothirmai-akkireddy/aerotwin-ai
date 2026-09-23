@@ -1,9 +1,41 @@
 """Application configuration managed via Pydantic Settings with explicit categories."""
 
+import os
+from pathlib import Path
 from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+def is_serverless_environment() -> bool:
+    """Detect whether running inside Vercel, AWS Lambda, or a serverless container."""
+    return bool(
+        os.environ.get("VERCEL")
+        or os.environ.get("VERCEL_ENV")
+        or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+        or os.environ.get("LAMBDA_TASK_ROOT")
+    )
+
+
+def resolve_storage_root(
+    environment: str = "development",
+    custom_root: str | Path | None = None,
+) -> Path:
+    """Resolve the writable runtime storage root directory based on environment.
+
+    - Explicit custom root via argument or env (AEROTWIN_STORAGE_ROOT / STORAGE_ROOT) takes precedence.
+    - Serverless runtimes (Vercel / Lambda) or production environment use /tmp/aerotwin.
+    - Default local development uses data/.
+    """
+    if custom_root:
+        return Path(custom_root)
+    env_override = os.environ.get("AEROTWIN_STORAGE_ROOT") or os.environ.get("STORAGE_ROOT")
+    if env_override:
+        return Path(env_override)
+    if is_serverless_environment() or environment.lower() == "production":
+        return Path("/tmp/aerotwin")
+    return Path("data")
 
 
 class ServerConfig(BaseModel):
@@ -52,10 +84,38 @@ class TelemetryConfig(BaseModel):
 class StorageConfig(BaseModel):
     """Persistence and flight logging configuration."""
 
-    sqlite_db_path: str = Field(default="data/aerotwin.db", description="Path to SQLite database")
-    parquet_data_dir: str = Field(
-        default="data/telemetry_parquet", description="Directory for Parquet flight dumps"
+    base_dir: str = Field(
+        default_factory=lambda: resolve_storage_root().as_posix(),
+        description="Root directory for runtime writable data (e.g. data or /tmp/aerotwin)",
     )
+    sqlite_db_path: str = Field(
+        default="",
+        description="Path to SQLite database",
+    )
+    parquet_data_dir: str = Field(
+        default="",
+        description="Directory for Parquet flight dumps",
+    )
+
+    def model_post_init(self, __context: Any) -> None:
+        """Initialize derived storage paths if not explicitly provided."""
+        root = Path(self.base_dir)
+        if not self.sqlite_db_path:
+            self.sqlite_db_path = (root / "aerotwin.db").as_posix()
+        if not self.parquet_data_dir:
+            self.parquet_data_dir = (root / "telemetry_parquet").as_posix()
+
+    @property
+    def missions_dir(self) -> Path:
+        return Path(self.base_dir) / "missions"
+
+    @property
+    def sqlite_dir(self) -> Path:
+        return Path(self.base_dir) / "sqlite"
+
+    @property
+    def parquet_dir(self) -> Path:
+        return Path(self.parquet_data_dir)
 
 
 class DiagnosticsConfig(BaseModel):
@@ -144,6 +204,13 @@ class AppSettings(BaseSettings):
             self.server.port = self.port
         if self.telemetry_rate_hz != 10:
             self.telemetry.rate_hz = self.telemetry_rate_hz
+
+        # Propagate environment or serverless status to storage configuration
+        resolved_root = resolve_storage_root(environment=self.environment).as_posix()
+        if self.storage.base_dir != resolved_root:
+            self.storage.base_dir = resolved_root
+            self.storage.sqlite_db_path = (Path(resolved_root) / "aerotwin.db").as_posix()
+            self.storage.parquet_data_dir = (Path(resolved_root) / "telemetry_parquet").as_posix()
 
 
 settings = AppSettings()
