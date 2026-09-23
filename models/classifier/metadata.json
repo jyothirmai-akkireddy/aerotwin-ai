@@ -1,0 +1,61 @@
+{
+  "model_version": "1.0.0",
+  "classifier_name": "XGBoostFaultClassifier",
+  "feature_schema_version": "1.0.0",
+  "confidence_threshold": 0.6,
+  "class_names": [
+    "NORMAL",
+    "OIL_PRESSURE_BIAS",
+    "OIL_TEMP_DRIFT",
+    "THROTTLE_STUCK",
+    "SENSOR_DROPOUT",
+    "MAP_NOISE_SPIKE"
+  ],
+  "trained_at_utc": "2026-09-23 08:17:09 UTC",
+  "provenance": "SYNTHETIC_SIMULATED_PROTOTYPE",
+  "training_samples": 5300,
+  "test_metrics": {
+    "accuracy": 0.9764,
+    "macro_precision": 0.9608,
+    "macro_recall": 0.9847,
+    "macro_f1": 0.9719,
+    "per_class": {
+      "NORMAL": {
+        "precision": 1.0,
+        "recall": 0.9684,
+        "f1": 0.9839,
+        "support": 3381
+      },
+      "OIL_PRESSURE_BIAS": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 480
+      },
+      "OIL_TEMP_DRIFT": {
+        "precision": 0.8319,
+        "recall": 0.9431,
+        "f1": 0.884,
+        "support": 299
+      },
+      "THROTTLE_STUCK": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 380
+      },
+      "SENSOR_DROPOUT": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "support": 480
+      },
+      "MAP_NOISE_SPIKE": {
+        "precision": 0.9331,
+        "recall": 0.9964,
+        "f1": 0.9637,
+        "support": 280
+      }
+    }
+  }
+}

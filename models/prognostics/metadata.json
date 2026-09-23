@@ -1,0 +1,38 @@
+{
+  "model_name": "HistGradientBoostingRULQuantileEstimator",
+  "model_version": "1.0.0",
+  "feature_schema_version": "1.0.0",
+  "target": "true_rul_hours",
+  "features": [
+    "health_index",
+    "beta_slope",
+    "subsystem_oil_norm",
+    "subsystem_therm_norm",
+    "subsystem_turbo_norm",
+    "subsystem_vib_norm",
+    "cht_spread",
+    "oil_temperature",
+    "oil_pressure",
+    "cum_thermal_stress",
+    "cum_map_stress",
+    "anom_score"
+  ],
+  "quantiles": [
+    0.025,
+    0.5,
+    0.975
+  ],
+  "test_metrics": {
+    "mae_hours": 6.413,
+    "rmse_hours": 7.7319,
+    "empirical_95_coverage": 0.8978,
+    "mean_interval_width_hours": 23.1785
+  },
+  "training_metadata": {
+    "train_samples": 12348,
+    "train_runs": 50,
+    "fit_duration_seconds": 1.12,
+    "timestamp": "2026-09-23T10:14:13Z"
+  },
+  "disclaimer": "PROTOTYPE RESEARCH MODEL \u2014 NOT FOR CERTIFIED FLIGHT OPERATIONS OR REAL-WORLD LIFING"
+}

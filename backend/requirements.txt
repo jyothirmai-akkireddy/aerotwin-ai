@@ -1,0 +1,33 @@
+# ==============================================================================
+# AeroTwin AI — Backend Core Dependencies
+# Python Target: 3.10.11 (Windows x64)
+# Architecture: Modular Monolith (Clean Hexagonal Architecture)
+# ==============================================================================
+
+# Web Framework & Async Transport
+fastapi>=0.110.0,<0.116.0
+uvicorn[standard]>=0.28.0,<0.35.0
+websockets>=12.0,<15.0
+
+# Data Validation & Typed Configuration
+pydantic>=2.6.0,<2.11.0
+pydantic-settings>=2.2.0,<2.9.0
+
+# Numerical Computation & Simulation
+numpy>=1.24.0,<2.0.0
+scipy>=1.11.0,<1.15.0
+pandas>=2.1.0,<2.3.0
+
+# Machine Learning & Explainable AI (XAI)
+scikit-learn>=1.4.0,<1.7.0
+xgboost>=2.0.0,<3.0.0
+shap>=0.44.0,<0.47.0
+
+# Data Persistence & Columnar Storage (10 Hz flight logs)
+pyarrow>=15.0.0,<19.0.0
+
+# Testing & Quality Assurance
+pytest>=8.0.0,<9.0.0
+pytest-asyncio>=0.23.0,<0.26.0
+httpx>=0.27.0,<0.29.0
+ruff>=0.3.0,<0.10.0

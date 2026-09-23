@@ -1,0 +1,35 @@
+{
+  "version": "1.0.0",
+  "engine_displacement_cc": 1352.0,
+  "idle_rpm": 1400.0,
+  "rated_rpm": 5500.0,
+  "spool_rpm": 2200.0,
+  "max_boost_pr": 1.45,
+  "tau_cht_seconds": 14.0,
+  "tau_egt_seconds": 1.2,
+  "tau_oil_seconds": 35.0,
+  "tau_coolant_seconds": 16.0,
+  "cht_cylinder_bias": [
+    1.0,
+    0.98,
+    1.03,
+    0.99
+  ],
+  "egt_cylinder_bias": [
+    1.0,
+    0.99,
+    1.02,
+    1.0
+  ],
+  "sigma_scales": {
+    "rpm": 45.0,
+    "manifold_pressure": 0.65,
+    "fuel_flow": 0.55,
+    "cht": 3.5,
+    "egt": 14.2,
+    "coolant_temp": 2.2,
+    "oil_temperature": 2.8,
+    "oil_pressure": 0.28,
+    "vibration_rms": 0.22
+  }
+}
